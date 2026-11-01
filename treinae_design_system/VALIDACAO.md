@@ -1,25 +1,27 @@
-# Validação da entrega
+# Verificação da versão 2.0
 
-Data: 30/10/2026. Ambiente: Flutter 3.35.5 e Dart 3.9.2, Linux.
+Ambiente usado: Flutter 3.35.5 / Dart 3.9.2, Linux.
 
 | Verificação | Resultado |
 | --- | --- |
-| `flutter analyze --no-pub` na raiz, incluindo example | Aprovado, sem problemas encontrados |
-| `flutter test --no-pub` na raiz | 6 testes aprovados |
-| `flutter test --no-pub` em example | 15 testes aprovados |
-| `flutter build web --no-pub --no-tree-shake-icons` em example | Compilação de produção aprovada |
-| Renderização das prévias | Conferida: galeria, botões, login, início claro e escuro |
+| Análise estática | Sem problemas encontrados. |
+| `flutter test --no-pub` na raiz | 50 testes aprovados. |
+| Abertura pelo `lib/main.dart` da raiz | Validada em teste de widgets. |
+| Estrutura por componente | 22 pastas, cada uma com Component + Factory + ViewModel. |
+| Layout dos samples | 22 telas testadas em 320 px nos temas claro e escuro. |
+| Revisão visual | Catálogo claro, catálogo escuro e botões renderizados e conferidos. |
+| `flutter build web --no-pub --no-tree-shake-icons` | Compilação concluída. |
 
-As prévias estão em `docs/previas`. Para recriá-las, execute em `example`:
+Os testes também verificam bloqueio de toques, visibilidade de senha, composição pela Factory, preservação da contagem acima da meta e ausência de dependência da pasta `example`.
 
-```powershell
+O teste de abertura usa a classe do `lib/main.dart`, sem criar ou executar um aplicativo em uma subpasta. Os dados e interações dos samples são locais.
+
+As prévias estão em `docs/previas`. Para recriar, execute na raiz:
+
+```bash
 flutter test tool/export_previews.dart
 ```
 
-Os 15 testes do sample incluem o fluxo de entrada e busca, além de cada uma das 7 categorias em largura de 320 px, nos dois temas. Não substituem uma avaliação completa de acessibilidade nem testes em todos os aparelhos.
+As configurações de plataforma foram trazidas da referência e ajustadas para o Treinaê. Android, iOS e desktops **não foram compilados nem executados em dispositivo nesta entrega**. A execução nessas plataformas depende dos SDKs correspondentes instalados no computador. Nenhum APK foi gerado.
 
-O projeto Android foi gerado pelo Flutter e está incluído. **Não foi compilado em APK nem executado em emulador Android nesta entrega**; isso requer Android SDK configurado. A compilação web foi feita, mas não foi publicada.
-
-O Design System não depende da API. O login e as telas compostas são demonstrações locais; o app completo e o servidor mock serão desenvolvidos separadamente.
-
-Nesta instalação do SDK, a otimização de fontes de ícones apresentou erro interno `ConstFinder`. A compilação foi realizada com a opção oficial `--no-tree-shake-icons`, que preserva as fontes completas; isso aumenta o tamanho dos assets de ícones, sem remover funcionalidades.
+No Android, o Gradle 8.14 e os plugins foram mantidos alinhados à configuração do projeto antigo; os scripts de inicialização e o wrapper também estão incluídos no ZIP.

@@ -1,170 +1,104 @@
-# Treinaê - Design System Flutter
+# Treinaê — Design System (arquitetura revisada)
 
 **Aluno:** Marcelo Negrão  
 **Professor:** Malfatti  
-**Disciplina:** Mobile 2
+**Disciplina:** Mobile 2  
+**Versão:** 2.0.0
 
-Pacote de componentes Flutter e sample app baseado no projeto exportado do Figma Make. O código React/TypeScript original foi usado como referência visual; estes componentes foram implementados em Dart.
+Projeto reorganizado a partir da arquitetura do arquivo `design-system-flutter-main.zip` enviado como referência. A demonstração executa **diretamente na raiz**, por `lib/main.dart`. Não existe pasta `example`.
 
-## Comece por aqui
+## Abrir no Android Studio
 
-1. Extraia **todo** o ZIP. Não execute arquivos dentro do ZIP.
-2. Abra a pasta `treinae_design_system` no VS Code.
-3. Confirme que o Flutter está instalado com `flutter --version`.
-4. Abra o terminal do VS Code e execute:
+1. Extraia o ZIP inteiro em uma pasta nova.
+2. Clique em **Open** e selecione a pasta `treinae_design_system`, que contém `pubspec.yaml`, `lib` e `android`.
+3. Aguarde a indexação e execute `flutter pub get` no terminal.
+4. Inicie um emulador Android, selecione o dispositivo e execute `lib/main.dart`.
 
-```powershell
-cd example
+Não abra apenas a pasta `android`. O ponto de entrada Flutter está na raiz, como no projeto antigo.
+
+## Executar pelo terminal
+
+Na pasta `treinae_design_system`:
+
+```bash
 flutter pub get
 flutter run -d chrome
 ```
 
-O projeto inclui as plataformas **web e Android**. Para executar no Android, com Android SDK e emulador já configurados, permaneça em `example`:
+Para Android, com SDK e emulador configurados:
 
-```powershell
+```bash
 flutter devices
 flutter run
 ```
 
-Para verificar sua instalação, use `flutter doctor`. O VS Code deve abrir a pasta extraída inteira; o sample depende do pacote que está na pasta acima dele.
+Requisitos desta versão: Flutter 3.35 ou superior e Dart 3.9 ou superior. São requisitos mínimos; versões mais recentes também podem resolver o projeto. A primeira instalação de dependências requer internet.
 
-**Requisitos:** Flutter 3.35 ou superior, Dart 3.9 ou superior. A fonte Manrope é incluída com licença OFL e funciona sem baixar fontes durante o uso. A primeira resolução de dependências requer internet.
+## Organização reproduzida do projeto de referência
 
-## O que apresentar ao professor
+| Local | Responsabilidade |
+| --- | --- |
+| `lib/main.dart` | Inicia o aplicativo de demonstração e configura tema/localização. |
+| `lib/common/constants` | Espaçamentos e raios comuns. |
+| `lib/common/theme` | Cores, tipografia, temas claro/escuro e decoração compartilhada de campos. |
+| `lib/components/<componente>` | Arquivos Component, Factory e ViewModel específicos daquele componente. |
+| `lib/screens` | Catálogo e uma tela de demonstração para cada componente. |
+| `test` | Verificações da estrutura, interações e layout. |
+| `android`, `ios`, `web`, `windows`, `linux`, `macos` | Projetos de plataforma na raiz. |
 
-- A tela inicial do sample apresenta as categorias de componentes.
-- Alterne entre tema claro e escuro pelo ícone no cabeçalho.
-- Em **Botões**, demonstre variantes, desabilitado e carregamento.
-- Em **Campos**, envie o formulário vazio e depois preencha corretamente.
-- Em **Controles**, altere checkbox, switch, slider e observe as metas.
-- Em **Navegação e feedback**, teste abas, confirmação, painel inferior e notificação.
-- Em **Componentes de treino**, edite uma série e abra o menu da ficha.
-- Em **Ver telas de exemplo**, demonstre a composição de login, início, fichas, execução, histórico, detalhes e perfil. Entre com qualquer e-mail de formato válido e senha de pelo menos 8 caracteres: é apenas validação local de demonstração.
-
-O Design System e o sample app são entregas próprias. As telas compostas demonstram como reutilizar os componentes; não são o app completo, não autenticam contas, não fazem chamadas HTTP e não salvam dados entre reinicializações.
-
-## Estrutura e responsabilidades
+Exemplo concreto:
 
 ```text
-treinae_design_system/
-  lib/
-    treinae_design_system.dart        API pública do pacote
-    src/
-      foundations/                  Cores, tipografia, espaçamento e temas
-      components/                   Widgets reutilizáveis e feedback
-      factories/                    Criação padronizada de variantes de botão
-  assets/fonts/                     Manrope e licença OFL
-  test/                             Testes do pacote
-  example/
-    lib/
-      main.dart                     Ponto de entrada
-      factories/                    Montagem do sample e criação do ViewModel
-      viewmodels/                   Estado observável das demonstrações
-      samples/                      Galeria e composições visuais
-    test/                           Fluxo da galeria e layout em 320 px
-    web/                            Inicialização da versão web
-    android/                        Projeto Android gerado pelo Flutter
+lib/components/action_button/action_button_component.dart
+lib/components/action_button/action_button_factory.dart
+lib/components/action_button/action_button_view_model.dart
+lib/screens/sample_action_button_screen.dart
 ```
 
-Os componentes recebem valores e callbacks. Não conhecem autenticação, rede, banco ou regras do treino. O ViewModel usa `ChangeNotifier` para expor estado às demonstrações; a Factory monta as dependências. A visibilidade da senha permanece como estado visual interno do campo. Controllers e estado temporário de formulário são descartados pela tela que os criou.
+### Como as três classes se conectam
 
-Esta estrutura segue as categorias `components`, `factories`, `viewmodels` e `samples` discutidas no projeto anterior. Sem o código de referência da disciplina, não é possível afirmar equivalência exata com todas as convenções do professor; os nomes e assinaturas podem ser ajustados ao material de aula.
+1. A tela chama a **Factory** com a variante e os dados desejados.
+2. A Factory cria o **ViewModel** e o entrega ao **Component**.
+3. O Component desenha o widget conforme a configuração recebida.
+4. Eventos retornam à tela por callbacks; a tela mantém o estado da demonstração.
+
+Os ViewModels são configurações imutáveis com campos `final` e construtores `const`, como no arquivo antigo. Não são um ViewModel global com `ChangeNotifier`. Controllers e callbacks ficam nos componentes/telas, não nos modelos de apresentação.
+
+Um componente composto também usa as factories de seus elementos internos. Por exemplo, a meta mensal combina um card com uma barra de progresso.
 
 ## Componentes disponíveis
 
-| Grupo | Componentes / estados |
+Todos os 22 grupos possuem seu trio de arquivos e uma tela própria em `screens`:
+
+- Botão de ação: principal, secundário, texto, destrutivo, carregando e desabilitado.
+- Campo de texto, campo de senha, busca e seleção.
+- Cards, etiquetas, avatar, marca, estado vazio e título de seção.
+- Progresso, meta mensal, checkbox, switch e slider.
+- Cabeçalho com retorno e navegação inferior.
+- Feedback, notificações, confirmação e painel inferior.
+- Ficha de treino, item do histórico e registro de série.
+
+As mensagens, confirmações e painéis são expostos pela `FeedbackFactory`. As demais demonstrações usam factories específicas por componente, sem uma factory geral para o aplicativo.
+
+## O que mudou em relação à primeira entrega
+
+| Antes | Agora |
 | --- | --- |
-| Identidade | `TreinaeBrand`, tokens de cores, tipografia, espaçamento, raios |
-| Temas | `TreinaeTheme.light`, `TreinaeTheme.dark`, `TreinaeColors` com `ThemeExtension` |
-| Botões | `TreinaeButton`, quatro variantes, ícone, compacto, desabilitado e carregamento |
-| Factory | `TreinaeButtonFactory.primary/secondary/ghost/danger` |
-| Entrada | `TreinaeTextField`, `TreinaePasswordField`, `TreinaeSearchField`, `TreinaeSelect<T>` |
-| Validação | Integração com `Form`, `validator`, erro externo, ajuda, leitura e desabilitado |
-| Superfícies | `TreinaeCard`, `TreinaeSectionTitle`, `TreinaeEmptyState` |
-| Identificação | `TreinaeAvatar` com iniciais/fallback de imagem; `TreinaeBadge` |
-| Controles | `TreinaeCheckbox`, `TreinaeSwitch`, `TreinaeSlider` |
-| Progresso | `TreinaeProgress`, `TreinaeGoalCard`, tratamento de meta zero e acima de 100% |
-| Navegação | `TreinaeAppBar` com retorno e `TreinaeBottomNavigation` com três abas |
-| Feedback | `TreinaeMessage`, `TreinaeFeedback.toast/confirm/sheet` |
-| Treino | `TreinaeWorkoutCard`, `TreinaeSessionTile`, `TreinaeSetRow` |
+| Demonstração em `example/lib/main.dart`. | Demonstração em `lib/main.dart`, na raiz. |
+| Vários componentes agrupados em arquivos em `lib/src/components`. | Uma pasta por componente com Component + Factory + ViewModel. |
+| Factory de botão separada e estado compartilhado da galeria. | Factories específicas por componente e estado local nas telas de demonstração. |
+| Galeria separada do projeto principal. | Catálogo e samples em `lib/screens`, como na referência. |
 
-## Usar no aplicativo final
+As cores verde/sálvia, a tipografia Manrope e os temas do Treinaê foram preservados. As fontes são locais e sua licença está em `assets/fonts/OFL.txt`.
 
-Ao lado da pasta do app, mantenha a pasta do Design System. No `pubspec.yaml` do **app**:
+## Testar e compilar
 
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  treinae_design_system:
-    path: ../treinae_design_system
-```
-
-Depois de `flutter pub get`, importe:
-
-```dart
-import 'package:treinae_design_system/treinae_design_system.dart';
-```
-
-No `MaterialApp`, configure os temas:
-
-```dart
-MaterialApp(
-  theme: TreinaeTheme.light,
-  darkTheme: TreinaeTheme.dark,
-  themeMode: ThemeMode.system,
-  home: const MinhaTela(),
-);
-```
-
-Exemplo de composição:
-
-```dart
-TreinaeButtonFactory.primary(
-  label: 'Iniciar treino',
-  icon: Icons.play_arrow_outlined,
-  onPressed: iniciarTreino,
-);
-
-TreinaeGoalCard(completed: 12, goal: 16);
-
-TreinaePasswordField(
-  controller: senhaController,
-  validator: (value) => (value?.length ?? 0) < 8
-      ? 'Use pelo menos 8 caracteres.'
-      : null,
-);
-```
-
-O exemplo de campo precisa estar em um `Form` para `validate()` executar a validação. O controller deve ser descartado pela tela que o criou.
-
-## Decisões visuais
-
-- Cores copiadas dos tokens do CSS recebido: principal `#28584A`, fundo `#F7F8F5`, sálvia `#E4EBE5`, texto `#202723` e erro `#A84848`.
-- Tema escuro acompanha os tokens exportados.
-- Tipografia Manrope incluída localmente.
-- Campos/botões com raio 14 px, cards com 18 px, diálogos com 22 px.
-- Legendas pequenas do protótipo web foram ampliadas para pelo menos 12 px; controles interativos usam área mínima próxima de 48 px.
-- Textos maiores podem quebrar linha, e telas usam rolagem. Não há uma moldura de iPhone embutida no app.
-- Contagem de treino e percentuais continuam sendo reais; a barra é limitada ao intervalo de 0 a 100%.
-
-## Verificação
-
-Na raiz do pacote:
-
-```powershell
-flutter pub get
-flutter analyze
-flutter test
-cd example
-flutter pub get
+```bash
 flutter analyze
 flutter test
 flutter build web --no-tree-shake-icons
 ```
 
-Os testes verificam bloqueio de toques no carregamento, visibilidade de senha, seleção, confirmações, contraste das cores, limites do progresso, validação e navegação do sample e layouts estreitos em ambos os temas. Consulte `VALIDACAO.md` para o resultado executado nesta entrega.
+O último comando preserva integralmente as fontes de ícones. Ele evita uma falha de otimização de ícones observada no SDK usado na primeira entrega, sem alterar a arquitetura ou o funcionamento dos componentes.
 
-## Próxima etapa
-
-Integrar esses componentes nas telas definitivas do Treinaê. O servidor mock será um projeto separado, implementado de acordo com o PDF do contrato da API. O sample não altera esse contrato.
+Consulte `VALIDACAO.md` para os resultados desta versão. Os exemplos são locais e não fazem requisições à API; nenhuma autenticação real é realizada.

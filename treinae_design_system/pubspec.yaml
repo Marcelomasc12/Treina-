@@ -1,6 +1,6 @@
 name: treinae_design_system
 description: Componentes visuais reutilizáveis do Treinaê para Flutter.
-version: 1.0.0
+version: 2.0.0+1
 publish_to: none
 environment:
   sdk: '>=3.9.0 <4.0.0'
@@ -8,6 +8,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
